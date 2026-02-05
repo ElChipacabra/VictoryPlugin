@@ -13,6 +13,10 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "VictoryBPFunctionLibrary.generated.h"
 
+//#if WITH_EDITOR
+//class UDynamicMeshComponent;
+//#endif
+
 /** 
 	Made With Love By Rama for Use with @VictoryCreateProc
 	So that you can receive feedback from your processes.
@@ -21,6 +25,8 @@
 	
 	Rama
 */
+
+
 UCLASS(Blueprintable,BlueprintType)
 class URamaVictoryPluginCreateProcessPipe : public UObject
 {
@@ -94,11 +100,9 @@ class UVictoryBPFunctionLibrary : public UBlueprintFunctionLibrary
 		@param ContentFolderPath If this is just a name (there is no need to add a ".uasset" file extension to the name), the Static Mesh Asset will be created in your game's Content root directory (folder)! If the path is YourFolder/YourAssetName, then the asset will be created in your chosen folder (within Content Folder), I create the folder if necessary, using GenericPlatformFile::CreateDirectoryTree, my very first UE Engine Github C++ code gifts! ♥ Rama
 		@param Status more info about reason for operation not succeeding, or a special Success Message!
 	*/
-	UFUNCTION(BlueprintCallable,Category=RamaCode)
-	static UStaticMesh* CreateStaticMeshAssetFromDynamicMesh(FString ContentFolderPath, UDynamicMeshComponent* DynamicMeshComp, FString& Status, FString& NewAssetFilePath, bool& Success);
-	
+
 	/** Obtain the scaled,rotated, and translated vertex positions for any static mesh! Returns false if operation could not occur because the comp or static mesh asset was invalid. <3 Rama */
-	UFUNCTION(BlueprintCallable, Category = "Victory BP Library|Actor")
+		UFUNCTION(BlueprintCallable, Category = "Victory BP Library|Actor")
 	static bool GetStaticMeshVertexLocations(UStaticMeshComponent* Comp, TArray<FVector>& VertexPositions, int32 LodIndex = 0);
 	
 	//~~~~~~~~~~~~~~~~~~~
@@ -165,6 +169,14 @@ class UVictoryBPFunctionLibrary : public UBlueprintFunctionLibrary
 	 * @param WidgetClass The widget class to filter by.
 	 * @param TopLevelOnly Only a widget that is a direct child of the viewport will be returned.
 	 */
+
+	/*
+	#if WITH_EDITOR
+
+		UFUNCTION(BlueprintCallable, Category = RamaCode)
+		static UStaticMesh* CreateStaticMeshAssetFromDynamicMesh(FString ContentFolderPath, UDynamicMeshComponent* DynamicMeshComp, FString& Status, FString& NewAssetFilePath, bool& Success);
+	#endif
+	*/
 	UFUNCTION(Category = "Victory BP Library|UMG", BlueprintCallable, BlueprintCosmetic, Meta = (WorldContext = "WorldContextObject", DeterminesOutputType = "WidgetClass"))
 	static UUserWidget* GetFirstWidgetOfClass(UObject* WorldContextObject, TSubclassOf<UUserWidget> WidgetClass, bool TopLevelOnly);
 	

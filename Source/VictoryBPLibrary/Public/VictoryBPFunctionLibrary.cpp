@@ -10,6 +10,9 @@
 #include "UObject/UObjectIterator.h"
 #include "EngineUtils.h"
 
+#include <string>
+#include <cctype>   // for isalnum
+
 //UE UI
 #include "Framework/Application/SlateApplication.h"
 
@@ -46,16 +49,10 @@
 #include "Components/StaticMeshComponent.h"
 
 //~~~ CreateStaticMeshAssetFromDynamicMesh ~~~
-#include "Runtime/GeometryFramework/Public/Components/DynamicMeshComponent.h"
-
-//Runtime
-//Engine\Plugins\Runtime\MeshModelingToolset\Source\ModelingComponents\Public\ModelingObjectsCreationAPI.h
-#include "ModelingObjectsCreationAPI.h"
- 
-//Editor
 #if WITH_EDITOR
-	//"ModelingComponentsEditorOnly" in build.cs ♥ Rama
-	#include "AssetUtils/CreateStaticMeshUtil.h"
+//#include "Components/DynamicMeshComponent.h" // use module path, not Runtime/... absolute
+//#include "ModelingObjectsCreationAPI.h"      // only if available in your editor build
+//#include "AssetUtils/CreateStaticMeshUtil.h"
 #endif
 //~~~~ End CreateStaticMeshAssetFromDynamicMesh ~~~
 
@@ -243,6 +240,9 @@ UVictoryBPFunctionLibrary::UVictoryBPFunctionLibrary(const FObjectInitializer& O
 // 	    Joy Geo
 //~~~~~~~~~~~~~~~~~~~
 
+/*
+#if WITH_EDITOR
+#include "AssetUtils/CreateStaticMeshUtil.h"
 UStaticMesh* UVictoryBPFunctionLibrary::CreateStaticMeshAssetFromDynamicMesh( 
 	FString ContentFolderPath,
 	UDynamicMeshComponent* DynamicMeshComp, 
@@ -379,6 +379,9 @@ UStaticMesh* UVictoryBPFunctionLibrary::CreateStaticMeshAssetFromDynamicMesh(
 	return nullptr;
 }
 
+
+#endif
+*/
 bool UVictoryBPFunctionLibrary::GetStaticMeshVertexLocations(UStaticMeshComponent* Comp, TArray<FVector>& VertexPositions, int32 LodIndex)
 {
 	if(!Comp) 
@@ -2046,12 +2049,11 @@ bool UVictoryBPFunctionLibrary::Victory_GetFilesInRootAndAllSubFolders(TArray<FS
 
 bool UVictoryBPFunctionLibrary::IsAlphaNumeric(const FString& String)
 {
-	std::string str = (TCHAR_TO_UTF8(*String));
-	    
-	for ( std::string::iterator it=str.begin(); it!=str.end(); ++it)
+	std::string str = TCHAR_TO_UTF8(*String);
+	for (char ch : str)
 	{
-		if(!isalnum(*it))
-		{   
+		if (!std::isalnum(static_cast<unsigned char>(ch)))
+		{
 			return false;
 		}
 	}

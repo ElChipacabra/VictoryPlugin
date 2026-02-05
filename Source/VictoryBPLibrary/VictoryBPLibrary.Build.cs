@@ -1,87 +1,66 @@
-// Some copyright should be here...
+// VictoryBPLibrary.Build.cs - adjusted dependency layout for installed engine builds
 
 using UnrealBuildTool;
+using System.Collections.Generic;
 
 public class VictoryBPLibrary : ModuleRules
 {
-	public VictoryBPLibrary(ReadOnlyTargetRules Target) : base(Target)
-	{
-		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		
-		PublicIncludePaths.AddRange(
-			new string[] {
-				// ... add public include paths required here ...
-			}
-			);
-				
-		
-		PrivateIncludePaths.AddRange(
-			new string[] {
-				// ... add other private include paths required here ...
-			}
-			);
-		
-		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		// Rama Joy Geo 
-		// (You can remove these and the MeshModelingToolset in the .uplugin 
-		// if you don't need The CreateStaticMeshAssetFromDynamicMesh or GetStaticMeshVertexLocations)
-		if(Target.bBuildEditor)
-		{
-			//CreateStaticMeshAssetFromDynamicMesh
-			PublicDependencyModuleNames.AddRange(
-				new string[]
-				{
-					"ModelingComponentsEditorOnly"
-				}
-			);
-		} // End Editor Only
-		
-		PublicDependencyModuleNames.AddRange(
-			new string[]
-			{
-				//GetStaticMeshVertexLocations
-				"Core",
-				"MeshDescription",
-				
-				//CreateStaticMeshAssetFromDynamicMesh
-				"GeometryFramework",
-				"ModelingComponents",
-				            // Geometry / modeling runtime modules required to resolve FDynamicMesh3 and friends
-            "GeometryCore",
-            "DynamicMesh",        // module exposed by GeometryProcessing plugin
-            "ModelingComponents", // runtime part exposed by MeshModelingToolset plugin
-            "GeometryAlgorithms"  // optional if you use it (from GeometryProcessing)
-			}
-			);
-		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		
-		PrivateDependencyModuleNames.AddRange(
-			new string[]
-			{
-				"CoreUObject",
-				"Engine",
-				"InputCore",
-				"RHI",
-				"Slate",
-				"SlateCore",
-				"ApplicationCore",
-				"AppFramework",			//For Color Picker! ♥ Rama
-				"UMG", "Slate", "SlateCore",
-			
-			}
-			);
+    public VictoryBPLibrary(ReadOnlyTargetRules Target) : base(Target)
+    {
+        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        //PublicAdditionalLibraries.Add("C:/Program Files/Epic Games/UE_5.7/Engine/Intermediate/Build/Win64/x64/UnrealEditor/Development/GeometryCore/UnrealEditor-GeometryCore.lib");
+        // Public dependencies - modules your public headers (or UHT-generated headers) need.
+        PublicDependencyModuleNames.AddRange(new string[]
+        {
+            "Core",
+            "CoreUObject",
+            "Engine",
+            "InputCore",
 
-        DynamicallyLoadedModuleNames.AddRange(
-			new string[]
-			{
-				// ... add any modules that your module loads dynamically here ...
-			}
-			);
-	}
+            // UI modules: make public if Victory's public headers or UHT-generated headers
+            // include Slate/AppFramework types (SColorPicker, FReply, etc.)
+            "Slate",
+            "SlateCore",
+            "AppFramework",   // contains SColorPicker
+            "UMG"
+        });
+
+        // Private dependencies - internal modules used in .cpp files
+        PrivateDependencyModuleNames.AddRange(new string[]
+        {
+            "RHI",
+            "ApplicationCore",
+            // ... other internal modules
+        });
+
+        // Editor-only and Modeling/Geometry modules:
+        if (Target.bBuildEditor)
+        {
+            // Editor-only modeling modules (move modeling dependencies here)
+            PrivateDependencyModuleNames.AddRange(new string[]
+            {
+                "ModelingComponents",           // runtime modeling components (if available)
+                "ModelingComponentsEditorOnly", // editor-only helpers
+                "GeometryCore",
+                "GeometryFramework",
+                //"DynamicMesh",
+                "GeometryAlgorithms",
+                "MeshDescription",
+                // If MeshModelingToolset is available in your engine, you can add it here:
+                // "MeshModelingToolset"
+            });
+
+            // If some modeling features are exposed in public headers for editor builds only,
+            // you can add them to PublicDependencyModuleNames inside this block instead.
+        }
+
+        // Dynamically loaded modules (keep empty if none)
+        DynamicallyLoadedModuleNames.AddRange(new string[] { });
+
+        // If you have plugin-local include directories, add them here (prefer relative plugin paths)
+        // PublicIncludePaths.AddRange(new string[]{ "VictoryBPLibrary/Public" });
+        // PrivateIncludePaths.AddRange(new string[]{ "VictoryBPLibrary/Private" });
+
+        // Avoid any hard-coded absolute library paths like previously commented PublicAdditionalLibraries entries.
+    }
 }
