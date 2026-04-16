@@ -1,0 +1,1 @@
+This version of Rama's Victory Plugin will compile for Unreal Engine 5.7. I did have to comment out the DynamicMeshComponent and all references to it, so if you use that, this will probably not help you. For all other needs, it should work fine.
